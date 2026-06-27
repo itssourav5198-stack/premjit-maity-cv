@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premjit Maity — Foreman</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1C1F1B;
+    --plaster: #F4F2ED;
+    --concrete: #8A8F87;
+    --concrete-light: #D8D6CD;
+    --brass: #B08D57;
+    --site-green: #3D5A40;
+    --line: rgba(28,31,27,0.14);
+    --line-light: rgba(244,242,237,0.18);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--plaster);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  ::selection { background: var(--brass); color: var(--ink); }
+
+  a { color: inherit; text-decoration: none; }
+
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brass);
+    font-weight: 500;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    line-height: 1.02;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+
+  /* ---------- NAV ---------- */
+  .nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 6vw;
+    background: rgba(244,242,237,0.88);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+    transition: padding 0.3s ease;
+  }
+  .nav-mark {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: 0.02em;
+  }
+  .nav-mark span { color: var(--brass); }
+  .nav-links {
+    display: flex;
+    gap: 36px;
+  }
+  .nav-links a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--concrete);
+    position: relative;
+    padding-bottom: 4px;
+    transition: color 0.25s ease;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0%; height: 1px;
+    background: var(--brass);
+    transition: width 0.25s ease;
+  }
+  .nav-links a:hover::after { width: 100%; }
+  .nav-toggle { display: none; }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 120px 6vw 80px;
+    position: relative;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 70% 40%, rgba(244,242,237,0.0), var(--plaster) 75%);
+    pointer-events: none;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 0.7fr;
+    gap: 60px;
+    width: 100%;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: rise 0.7s 0.1s ease forwards;
+  }
+  .hero-tag .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--site-green);
+  }
+  .hero h1 {
+    font-size: clamp(3.2rem, 8vw, 6.4rem);
+    font-weight: 800;
+    opacity: 0;
+    animation: rise 0.8s 0.25s ease forwards;
+  }
+  .hero h1 .last {
+    display: block;
+    color: var(--ink);
+    -webkit-text-stroke: 2px var(--ink);
+    color: var(--plaster);
+    background-image: linear-gradient(var(--ink) 1px, transparent 1px), linear-gradient(90deg, var(--ink) 1px, transparent 1px);
+  }
+  .role-line {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 18px;
+    opacity: 0;
+    animation: rise 0.8s 0.4s ease forwards;
+  }
+  .role-line .rule {
+    width: 46px; height: 2px;
+    background: var(--brass);
+  }
+  .role-line span {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--site-green);
+  }
+  .hero p.lede {
+    margin-top: 28px;
+    max-width: 540px;
+    font-size: 1.02rem;
+    color: #4A4D47;
+    opacity: 0;
+    animation: rise 0.8s 0.55s ease forwards;
+  }
+  .hero-meta {
+    display: flex;
+    gap: 36px;
+    margin-top: 40px;
+    opacity: 0;
+    animation: rise 0.8s 0.7s ease forwards;
+  }
+  .hero-meta .stat .num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--ink);
+    display: block;
+  }
+  .hero-meta .stat .lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--concrete);
+  }
+
+  /* ID card */
+  .id-card {
+    background: var(--ink);
+    color: var(--plaster);
+    border-radius: 4px;
+    padding: 28px;
+    position: relative;
+    opacity: 0;
+    animation: rise 0.9s 0.35s ease forwards;
+    box-shadow: 0 30px 60px -20px rgba(28,31,27,0.35);
+  }
+  .id-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--brass), var(--site-green));
+  }
+  .id-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--concrete-light);
+    margin-bottom: 22px;
+  }
+  .avatar {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 3px;
+    background: linear-gradient(145deg, #2A2E26, #14160F);
+    border: 1px solid rgba(244,242,237,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 22px;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(rgba(244,242,237,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(244,242,237,0.05) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+  .avatar .mono-initials {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 4.2rem;
+    font-weight: 800;
+    color: var(--brass);
+    letter-spacing: 0.02em;
+    z-index: 1;
+  }
+  .id-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .id-role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--brass);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .id-divider {
+    height: 1px;
+    background: var(--line-light);
+    margin: 18px 0;
+  }
+  .id-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    padding: 6px 0;
+    color: var(--concrete-light);
+  }
+  .id-row b { color: var(--plaster); font-weight: 500; }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .scroll-cue {
+    position: absolute;
+    bottom: 36px;
+    left: 6vw;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--concrete);
+  }
+  .scroll-cue .bar {
+    width: 1px; height: 28px;
+    background: var(--concrete);
+    position: relative;
+    overflow: hidden;
+  }
+  .scroll-cue .bar::after {
+    content: '';
+    position: absolute;
+    top: -100%; left: 0; right: 0; height: 50%;
+    background: var(--brass);
+    animation: scrollbar 1.6s ease-in-out infinite;
+  }
+  @keyframes scrollbar { 50% { top: 100%; } 100% { top: 100%; } 0% {top:-50%;} }
+
+  /* ---------- SECTION SHELL ---------- */
+  section { padding: 110px 6vw; position: relative; }
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 64px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 26px;
+  }
+  .section-head h2 {
+    font-size: clamp(2.4rem, 4.5vw, 3.6rem);
+    font-weight: 700;
+  }
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--concrete);
+    letter-spacing: 0.05em;
+  }
+
+  /* ---------- ABOUT ---------- */
+  .about {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 70px;
+  }
+  .about-lead {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.7rem;
+    font-weight: 600;
+    text-transform: none;
+    line-height: 1.35;
+    color: var(--ink);
+  }
+  .about-lead .accent { color: var(--site-green); }
+  .about-body p {
+    color: #4A4D47;
+    margin-bottom: 18px;
+    font-size: 1rem;
+  }
+  .about-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 28px;
+  }
+  .about-tags span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 7px 14px;
+    border: 1px solid var(--line);
+    border-radius: 100px;
+    color: var(--ink);
+  }
+
+  /* ---------- WORKS / SKILLS ---------- */
+  .works-section { background: var(--ink); color: var(--plaster); }
+  .works-section .section-head { border-bottom-color: var(--line-light); }
+  .works-section .section-num { color: var(--concrete-light); }
+  .works-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line-light);
+    border: 1px solid var(--line-light);
+  }
+  .work-card {
+    background: var(--ink);
+    padding: 38px 30px;
+    transition: background 0.3s ease;
+    position: relative;
+  }
+  .work-card:hover { background: #24271F; }
+  .work-card .wk-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--brass);
+    margin-bottom: 20px;
+    display: block;
+  }
+  .work-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: 0.01em;
+  }
+  .work-card p {
+    font-size: 0.88rem;
+    color: var(--concrete-light);
+    text-transform: none;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ---------- LEDGER (experience) ---------- */
+  .ledger-block {
+    border-left: 2px solid var(--ink);
+    padding-left: 42px;
+    margin-bottom: 56px;
+    position: relative;
+  }
+  .ledger-block::before {
+    content: '';
+    position: absolute;
+    left: -7px; top: 2px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--brass);
+    border: 3px solid var(--plaster);
+    box-shadow: 0 0 0 2px var(--ink);
+  }
+  .ledger-period {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--brass);
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+  .ledger-org {
+    font-size: 1.9rem;
+    font-weight: 700;
+    margin-bottom: 22px;
+  }
+  .ledger-org span {
+    font-family: 'Inter', sans-serif;
+    text-transform: none;
+    font-weight: 400;
+    font-size: 1rem;
+    color: var(--concrete);
+    margin-left: 12px;
+  }
+  .proj-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+  }
+  .proj-item {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.96rem;
+  }
+  .proj-item .pidx {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--concrete);
+    min-width: 22px;
+  }
+
+  /* ---------- EDU + LANG ---------- */
+  .dual {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+  }
+  .panel {
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 40px;
+    background: #ECEAE2;
+  }
+  .panel h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .panel h3 .sq {
+    width: 8px; height: 8px;
+    background: var(--site-green);
+  }
+  .edu-year {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .edu-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-top: 12px;
+  }
+  .edu-loc {
+    font-size: 0.88rem;
+    color: var(--concrete);
+    margin-top: 4px;
+    text-transform: none;
+    font-family: 'Inter', sans-serif;
+  }
+  .lang-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .lang-row .lname {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  .lang-row .lpct {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--brass);
+  }
+  .lang-bar-track {
+    height: 6px;
+    background: var(--concrete-light);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .lang-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--site-green), var(--brass));
+    width: 0%;
+    border-radius: 100px;
+    transition: width 1.4s cubic-bezier(0.16,1,0.3,1);
+  }
+  .lang-bar-fill.in-view { width: 100%; }
+
+  /* ---------- CONTACT ---------- */
+  .contact-section {
+    background: var(--ink);
+    color: var(--plaster);
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 60px;
+    align-items: end;
+  }
+  .contact-grid h2 {
+    font-size: clamp(2.6rem, 6vw, 4.6rem);
+    font-weight: 800;
+    line-height: 1.05;
+  }
+  .contact-grid h2 .accent { color: var(--brass); }
+  .contact-list a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line-light);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem;
+    transition: padding-left 0.3s ease, color 0.3s ease;
+  }
+  .contact-list a:hover {
+    padding-left: 10px;
+    color: var(--brass);
+  }
+  .contact-list .clbl {
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--concrete-light);
+  }
+  footer {
+    padding: 30px 6vw;
+    background: var(--ink);
+    border-top: 1px solid var(--line-light);
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--concrete-light);
+    letter-spacing: 0.05em;
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 980px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .id-card { max-width: 340px; }
+    .about { grid-template-columns: 1fr; }
+    .works-grid { grid-template-columns: repeat(2,1fr); }
+    .dual { grid-template-columns: 1fr; }
+    .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+  }
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    .hero { padding-top: 110px; }
+    .hero h1 { font-size: 3rem; }
+    .works-grid { grid-template-columns: 1fr; }
+    section { padding: 70px 6vw; }
+    .section-head { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .hero-meta { flex-wrap: wrap; gap: 24px; }
+    .panel { padding: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-mark">PREMJIT<span>·</span>MAITY</div>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#works">Works</a>
+    <a href="#experience">Experience</a>
+    <a href="#education">Education</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="hero-tag">
+        <span class="dot"></span>
+        <span class="eyebrow">Site Foreman · 21 Years on Site</span>
+      </div>
+      <h1>PREMJIT<br>MAITY</h1>
+      <div class="role-line">
+        <span class="rule"></span>
+        <span>Foreman — Interior &amp; Construction</span>
+      </div>
+      <p class="lede">From The Westin to Godrej Summit — two decades of turning blueprints into finished interiors. Stone, ceiling, and structure, managed start to finish, on some of Delhi NCR's most demanding sites.</p>
+      <div class="hero-meta">
+        <div class="stat">
+          <span class="num">21+</span>
+          <span class="lbl">Years Experience</span>
+        </div>
+        <div class="stat">
+          <span class="num">11</span>
+          <span class="lbl">Major Sites Delivered</span>
+        </div>
+        <div class="stat">
+          <span class="num">02</span>
+          <span class="lbl">Firms Led Under</span>
+        </div>
+      </div>
+    </div>
+    <div class="id-card">
+      <div class="id-top">
+        <span>ID · FM-01991</span>
+        <span>Gurgaon, HR</span>
+      </div>
+      <div class="avatar">
+        <span class="mono-initials">PM</span>
+      </div>
+      <div class="id-name">Premjit Maity</div>
+      <div class="id-role">Foreman</div>
+      <div class="id-divider"></div>
+      <div class="id-row"><span>Based in</span><b>Gurgaon, India</b></div>
+      <div class="id-row"><span>Since</span><b>2005</b></div>
+      <div class="id-row"><span>Language</span><b>Hindi</b></div>
+    </div>
+  </div>
+  <div class="scroll-cue">
+    <span class="bar"></span>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<section id="about">
+  <div class="section-head reveal">
+    <h2>About</h2>
+    <span class="section-num mono">01 / 05</span>
+  </div>
+  <div class="about">
+    <div class="about-lead reveal">
+      Two decades on scaffolding and site floors — turning <span class="accent">drawings into rooms</span> people actually live and work in.
+    </div>
+    <div class="about-body reveal">
+      <p>Premjit Maity has spent over 21 years as a Foreman across interior fit-out and construction projects in the Delhi NCR region, overseeing stone work, ceiling work, and full interior execution from groundwork to handover.</p>
+      <p>He has worked under two major contracting firms — Takshaka Interior Pvt. Ltd. (2005–2020) and Purshottam Contractor / KCS Construction Pvt. Ltd. (2020–2026) — leading site teams on premium hospitality, residential, and commercial builds including The Westin, JW Marriott, Godrej, and M3M developments.</p>
+      <p>His role combines hands-on technical supervision with project and money management — coordinating labour, materials, timelines, and budgets to keep large sites moving without compromising finish quality.</p>
+      <div class="about-tags">
+        <span>Interior Work</span>
+        <span>Ceiling Work</span>
+        <span>Stone Work</span>
+        <span>Project Management</span>
+        <span>Money Management</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="works-section" id="works">
+  <div class="section-head reveal">
+    <h2>Works</h2>
+    <span class="section-num mono">02 / 05</span>
+  </div>
+  <div class="works-grid reveal">
+    <div class="work-card">
+      <span class="wk-num mono">01</span>
+      <h3>Interior Work</h3>
+      <p>Complete interior fit-out execution — from layout to finish, across residential and hospitality sites.</p>
+    </div>
+    <div class="work-card">
+      <span class="wk-num mono">02</span>
+      <h3>Ceiling Work</h3>
+      <p>Precision ceiling installation and detailing for high-spec commercial and hotel interiors.</p>
+    </div>
+    <div class="work-card">
+      <span class="wk-num mono">03</span>
+      <h3>Stone Work</h3>
+      <p>Stone selection, cutting, and installation for flooring, cladding, and feature surfaces on site.</p>
+    </div>
+    <div class="work-card">
+      <span class="wk-num mono">04</span>
+      <h3>Project Management</h3>
+      <p>End-to-end site coordination — schedules, vendors, and on-ground teams kept aligned to deadline.</p>
+    </div>
+    <div class="work-card">
+      <span class="wk-num mono">05</span>
+      <h3>Money Management</h3>
+      <p>Site budgeting and material cost control, ensuring projects stay on track financially as well as on time.</p>
+    </div>
+    <div class="work-card">
+      <span class="wk-num mono">06</span>
+      <h3>Site Leadership</h3>
+      <p>Direct supervision of on-site labour and subcontractors, maintaining quality and safety standards.</p>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="section-head reveal">
+    <h2>Experience</h2>
+    <span class="section-num mono">03 / 05</span>
+  </div>
+
+  <div class="ledger-block reveal">
+    <div class="ledger-period mono">2020 — 2026</div>
+    <div class="ledger-org">Purshottam Contractor <span>/ KCS Construction Pvt. Ltd.</span></div>
+    <div class="proj-list">
+      <div class="proj-item"><span class="pidx mono">01</span> Godrej Air</div>
+      <div class="proj-item"><span class="pidx mono">02</span> Godrej Summit</div>
+      <div class="proj-item"><span class="pidx mono">03</span> M3M</div>
+    </div>
+  </div>
+
+  <div class="ledger-block reveal">
+    <div class="ledger-period mono">2005 — 2020</div>
+    <div class="ledger-org">Takshaka Interior <span>Pvt. Ltd.</span></div>
+    <div class="proj-list">
+      <div class="proj-item"><span class="pidx mono">01</span> The Westin Sohna Resort</div>
+      <div class="proj-item"><span class="pidx mono">02</span> The Westin Gurgaon, Iffco Chowk</div>
+      <div class="proj-item"><span class="pidx mono">03</span> DLF Phase 5</div>
+      <div class="proj-item"><span class="pidx mono">04</span> DLF The Crest</div>
+      <div class="proj-item"><span class="pidx mono">05</span> Indigo Office</div>
+      <div class="proj-item"><span class="pidx mono">06</span> JW Marriott Hotel, New Delhi Aerocity</div>
+      <div class="proj-item"><span class="pidx mono">07</span> Andaz by Hyatt</div>
+      <div class="proj-item"><span class="pidx mono">08</span> Six Senses Fort Barwara</div>
+    </div>
+  </div>
+</section>
+
+<section id="education">
+  <div class="section-head reveal">
+    <h2>Education &amp; Language</h2>
+    <span class="section-num mono">04 / 05</span>
+  </div>
+  <div class="dual">
+    <div class="panel reveal">
+      <h3><span class="sq"></span>Education</h3>
+      <div class="edu-year mono">1991</div>
+      <div class="edu-name">Secondary Education</div>
+      <div class="edu-loc">West Bengal High School, West Bengal, IN</div>
+    </div>
+    <div class="panel reveal">
+      <h3><span class="sq"></span>Language</h3>
+      <div class="lang-row">
+        <span class="lname">Hindi</span>
+        <span class="lpct mono">100%</span>
+      </div>
+      <div class="lang-bar-track">
+        <div class="lang-bar-fill" id="langBar"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact-section" id="contact">
+  <div class="section-head reveal" style="border-bottom-color: var(--line-light);">
+    <h2>Contact</h2>
+    <span class="section-num mono">05 / 05</span>
+  </div>
+  <div class="contact-grid reveal">
+    <h2>Let's build<br>something <span class="accent">solid.</span></h2>
+    <div class="contact-list">
+      <a href="mailto:premjtmaiti@gmail.com">
+        <span class="clbl">Email</span>
+        <span>premjtmaiti@gmail.com</span>
+      </a>
+      <a href="tel:+918527749670">
+        <span class="clbl">Phone</span>
+        <span>+91 85277 49670</span>
+      </a>
+      <a href="#">
+        <span class="clbl">Location</span>
+        <span>Gurgaon, Haryana, India</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 Premjit Maity</span>
+  <span>Foreman · Gurgaon, India</span>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  const langObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+      }
+    });
+  }, { threshold: 0.5 });
+  langObserver.observe(document.getElementById('langBar'));
+</script>
+
+</body>
+</html>
